@@ -5,17 +5,15 @@ import { Col, Row } from 'react-bootstrap';
 
 function ContentContainer() {
     return (
-       <Row>
-         <Col md="8">
-            <div className="">
-                <AddTaskComponent />
-            </div>
-
-            <div className='mt-5 mb-5'>
-                <TaskList />
-            </div>
-        </Col>
-       </Row>
+        <>
+            <Row className="d-flex" style={{ width: "84%"}}>
+                <Col className='home-container pt-3'>
+                    <AddTaskComponent />
+                    <br />
+                    <TaskList />
+                </Col>
+            </Row>
+        </>
     );
 }
 

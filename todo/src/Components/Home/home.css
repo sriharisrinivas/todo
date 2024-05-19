@@ -74,8 +74,8 @@ i {
 
 /* Home Container */
 .home-container {
-    height: 100vh;
-    padding: 20px 0px 0 30px;
+    height: 92vh;
+    padding: 0 15px 0px 40px;
     /* width: 100%; */
     /* padding-top: 50px; */
     overflow-y: scroll;

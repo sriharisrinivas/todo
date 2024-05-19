@@ -59,6 +59,7 @@ function AddTaskComponent({ selectedRowDetails, callBack }) {
 
     useEffect(() => {
         if (selectedRowDetails) {
+            setAdvancedOptions(true);
             setFields(pre => ({
                 ...pre,
                 title: selectedRowDetails["TITLE"],

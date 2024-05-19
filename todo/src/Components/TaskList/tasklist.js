@@ -15,9 +15,9 @@ function TaskList() {
 
     return (
         <>
+            <Form.Text className='task-main-title'>All Tasks</Form.Text>
             <Row className='card task-card mt-2 mb-2'>
                 <Col className="task-list-container">
-                    <Form.Text className='task-main-title'>All Tasks</Form.Text>
 
                     <Row>
                         {todosList.map(item =>

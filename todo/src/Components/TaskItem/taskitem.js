@@ -80,7 +80,7 @@ function TaskItem({ item }) {
 
             <Row className={`task-item-container ${item.STATUS == 2 || item.STATUS == 3 ? "dynamic-task-item-container" : ''}`}>
                 <Col className='d-flex align-items-center task-name-container'>
-                    <Form.Check checked={item["STATUS"] == 2} onChange={() => onToggleStatus(item)} />
+                    <Form.Check disabled={item["STATUS"] == 3} checked={item["STATUS"] == 2} onChange={() => onToggleStatus(item)} />
                     <p>{item["TITLE"]}</p>
                 </Col>
 
