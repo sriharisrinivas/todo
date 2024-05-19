@@ -125,6 +125,24 @@ app.get("/getAllUsers/", authenticateToken, async (request, response) => {
     response.send(usersList);
 });
 
+/*  Get Profile Details API */
+
+app.get("/profile/", authenticateToken, async (request, response) => {
+    let query = `SELECT * FROM users WHERE USER_NAME=${payload.userName};`;
+    let userDetails = await db.get(query);
+
+    // Deleting sensitive information from response
+    userDetails.forEach(item => {
+        if (item.PASSWORD) {
+            delete item.PASSWORD;
+        }
+        if (item.USER_ID) {
+            delete item.USER_ID;
+        }
+    });
+    response.send(userDetails);
+});
+
 /*  Change API */
 
 app.put("/changePassword/", authenticateToken, async (request, response) => {
@@ -137,8 +155,13 @@ app.put("/changePassword/", authenticateToken, async (request, response) => {
 
 
 
+/******************* Common APIS  **********************/
 
-
+app.get("/getStatuses/:id/", authenticateToken, async (request, response) => {
+    let query = `SELECT * FROM masters WHERE DETAIL_SEQ_ID=${request.params.id};`;
+    let statusesList = await db.all(query);
+    response.send(statusesList);
+});
 
 
 /*******************  To Do APIs ************************/
@@ -146,7 +169,16 @@ app.put("/changePassword/", authenticateToken, async (request, response) => {
 app.get("/todos/", authenticateToken, async (request, response) => {
     let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
     let getUserDetails = await db.get(getUserDetailsQuery);
-    let todosQuery = `SELECT * FROM tasks WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;`;
+    // let todosQuery = `SELECT * FROM tasks WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;`;
+    let todosQuery = `SELECT TASK_ID, TITLE, A.DESCRIPTION, STATUS, 
+                        B.DT_DESCRIPTION AS STATUS_DESC, SEVERITY, C.DT_DESCRIPTION AS SEVERITY_DESC, 
+                        CATEGORY, D.DT_DESCRIPTION AS CATEGORY_DESC, TASK_DATE
+                        FROM tasks A
+                        LEFT JOIN masters B ON A.STATUS = B.DT_CODE AND B.DETAIL_SEQ_ID = 3
+                        LEFT JOIN masters C ON A.SEVERITY = C.DT_CODE AND C.DETAIL_SEQ_ID = 1
+                        LEFT JOIN masters D ON A.CATEGORY = D.DT_CODE  AND D.DETAIL_SEQ_ID = 2
+                        WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;
+                        ;`;
     let todosList = await db.all(todosQuery);
     // Deleting sensitive information from response
     todosList.forEach(item => {
@@ -161,8 +193,20 @@ app.post("/createTodo/", authenticateToken, async (request, response) => {
     let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
     let getUserDetails = await db.get(getUserDetailsQuery);
     const { title, description, status, severity, category, taskCreatedDate, taskDate } = request.body;
+
     let query = `INSERT INTO tasks (TITLE, DESCRIPTION, STATUS, SEVERITY, CATEGORY, USER_ID, TASK_CREATED_DATE,TASK_DATE)
-        VALUES('${title}', '${description}', ${status}, ${severity}, '${category}', ${getUserDetails.USER_ID}, '${taskCreatedDate}', '${taskDate}');`;
+            VALUES('${title}', '${description}', ${status}, ${severity}, '${category}', ${getUserDetails.USER_ID}, '${taskCreatedDate}', '${taskDate}');`;
     db.run(query);
-    response.send({ message: "Saved." });
+    response.send({ message: "Saved Succesfully." });
+});
+
+app.put("/updateTodo/", authenticateToken, async (request, response) => {
+    const { title, description, status, severity, category, taskDate, taskId } = request.body;
+
+    let query = `UPDATE tasks 
+        SET TITLE='${title}', DESCRIPTION='${description}',STATUS=${status}, SEVERITY=${severity},CATEGORY='${category}',TASK_DATE='${taskDate}'
+        WHERE TASK_ID=${taskId};`;
+
+    db.run(query);
+    response.send({ message: "Updated Successfully." });
 });

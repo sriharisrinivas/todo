@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+i {
+    cursor: pointer;
+}
+
 .todo-field {
     border-radius: 5px;
     border: 1px solid #ccc !important;
@@ -26,10 +30,14 @@
     border-radius: 5px;
 }
 
+
+/* Side bar */
 .css-1wvake5 {
     width: 242px !important;
     min-width: 242px !important;
 }
+
+/* Login Page */
 
 .login-page {
     width: 100%;
@@ -64,6 +72,7 @@
 }
 
 
+/* Home Container */
 .home-container {
     height: 100vh;
     padding: 20px 0px 0 30px;
@@ -103,6 +112,12 @@
     font-size: 13px;
 }
 
+.adv-options-container {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+}
+
 
 
 
@@ -116,9 +131,71 @@
 
 /* Task Item */
 .task-item-container {
-    display: flex;
+    /* display: flex;
     align-items: center;
+    border: 1px solid #ccc;
+    margin: 10px;
+    border-radius: 5px; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    margin: 10px;
+    border-radius: 5px;
+    gap: 10px;
 }
+
+.dynamic-task-item-container p,
+.dynamic-task-item-container small {
+    text-decoration: line-through;
+}
+
+.task-header-and-value-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.task-heading {
+    /* display: none; */
+    font-weight: 500;
+}
+
+.task-name-container {
+    min-width: 130px;
+    max-width: 130px;
+}
+
+.task-edit-btn {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-decoration: none !important;
+}
+
+@media (max-width: 576px) {
+    .task-item-container {
+        flex-direction: column;
+        align-items: self-start;
+    }
+
+    .task-header-and-value-wrapper {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .task-heading {
+        display: block;
+        margin-right: 10px;
+    }
+
+    .task-edit-btn {
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+}
+
+
 
 
 .task-item-container p {

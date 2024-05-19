@@ -20,7 +20,6 @@ const initialSignUpFields = {
 };
 
 function LoginSignUpForm(props) {
-console.log("🚀 ~ LoginSignUpForm ~ props:", props)
 
     const navigate = useNavigate();
 
