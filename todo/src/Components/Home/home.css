@@ -1,0 +1,126 @@
+* {
+    box-sizing: border-box;
+}
+
+.todo-field {
+    border-radius: 5px;
+    border: 1px solid #ccc !important;
+    font-size: 12px !important;
+    background-color: #fff !important;
+}
+
+.todo-field::placeholder {
+    opacity: 0.5;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.todo-field:focus {
+    box-shadow: none !important;
+    border: 1px solid #9d9797 !important;
+}
+
+.react-datepicker__view-calendar-icon input {
+    height: 34px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.css-1wvake5 {
+    width: 242px !important;
+    min-width: 242px !important;
+}
+
+.login-page {
+    width: 100%;
+}
+
+.login-left-section {
+    background: url("../../../public/stock-photo-coffee-cup-and-notebook-with-to-do-list-on-blue-rustic-desk-from-above-planning-and-design-concept-384639760.jpg");
+    /* background: url("../../../public/Crush\ Your\ Own\ To-Do\ List.jfif"); */
+    background-size: cover;
+    /* width: 80%; */
+}
+
+/* @media (max-width: 576px) {
+    .login-left-section {
+        display: none;
+    }
+} */
+
+.login-signup-container {
+    padding: 60px;
+    background: linear-gradient(178deg, #c3dae4, transparent);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    padding: 40px;
+    max-height: 650px;
+    overflow-y: scroll;
+}
+
+
+.home-container {
+    height: 100vh;
+    padding: 20px 0px 0 30px;
+    /* width: 100%; */
+    /* padding-top: 50px; */
+    overflow-y: scroll;
+
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.main-content-container {
+    /* height: 100vh;
+    width: 100%;
+    padding-top: 50px;
+    overflow: scroll; */
+}
+
+
+
+/* Add Task Component */
+
+.task-card {
+    padding: 25px;
+    gap: 16px;
+}
+
+.task-main-title,
+.login-main-title {
+    font-size: clamp(16px, 2vw, 25px);
+}
+
+.field-required {
+    color: red;
+    font-size: 13px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Task Item */
+.task-item-container {
+    display: flex;
+    align-items: center;
+}
+
+
+.task-item-container p {
+    margin: 1rem;
+}
