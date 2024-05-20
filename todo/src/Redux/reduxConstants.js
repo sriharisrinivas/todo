@@ -1,3 +1,0 @@
-export const REDUX_CONSTANTS = {
-    FETCH_TODOS: "FETCH_TODOS"
-};
