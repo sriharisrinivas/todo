@@ -166,19 +166,51 @@ app.get("/getStatuses/:id/", authenticateToken, async (request, response) => {
 
 /*******************  To Do APIs ************************/
 
-app.get("/todos/", authenticateToken, async (request, response) => {
+/* Old Method fetching status without filters */
+
+// app.get("/todos/", authenticateToken, async (request, response) => {
+//     let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
+//     let getUserDetails = await db.get(getUserDetailsQuery);
+//     // let todosQuery = `SELECT * FROM tasks WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;`;
+//     let todosQuery = `SELECT TASK_ID, TITLE, A.DESCRIPTION, STATUS, 
+//                         B.DT_DESCRIPTION AS STATUS_DESC, SEVERITY, C.DT_DESCRIPTION AS SEVERITY_DESC, 
+//                         CATEGORY, D.DT_DESCRIPTION AS CATEGORY_DESC, TASK_DATE
+//                         FROM tasks A
+//                         LEFT JOIN masters B ON A.STATUS = B.DT_CODE AND B.DETAIL_SEQ_ID = 3
+//                         LEFT JOIN masters C ON A.SEVERITY = C.DT_CODE AND C.DETAIL_SEQ_ID = 1
+//                         LEFT JOIN masters D ON A.CATEGORY = D.DT_CODE  AND D.DETAIL_SEQ_ID = 2
+//                         WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;
+//                         ;`;
+//     let todosList = await db.all(todosQuery);
+//     // Deleting sensitive information from response
+//     todosList.forEach(item => {
+//         if (item.USER_ID) {
+//             delete item.USER_ID;
+//         }
+//     });
+//     response.send(todosList);
+// });
+
+
+/* New Method fetching status with filters */
+
+app.post("/todos/", authenticateToken, async (request, response) => {
+    const { status, sortBySeverity, search, category } = request.body;
+
     let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
     let getUserDetails = await db.get(getUserDetailsQuery);
     // let todosQuery = `SELECT * FROM tasks WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;`;
     let todosQuery = `SELECT TASK_ID, TITLE, A.DESCRIPTION, STATUS, 
-                        B.DT_DESCRIPTION AS STATUS_DESC, SEVERITY, C.DT_DESCRIPTION AS SEVERITY_DESC, 
-                        CATEGORY, D.DT_DESCRIPTION AS CATEGORY_DESC, TASK_DATE
-                        FROM tasks A
-                        LEFT JOIN masters B ON A.STATUS = B.DT_CODE AND B.DETAIL_SEQ_ID = 3
-                        LEFT JOIN masters C ON A.SEVERITY = C.DT_CODE AND C.DETAIL_SEQ_ID = 1
-                        LEFT JOIN masters D ON A.CATEGORY = D.DT_CODE  AND D.DETAIL_SEQ_ID = 2
-                        WHERE USER_ID=${getUserDetails.USER_ID} ORDER BY TASK_ID DESC;
-                        ;`;
+        B.DT_DESCRIPTION AS STATUS_DESC, SEVERITY, C.DT_DESCRIPTION AS SEVERITY_DESC, 
+        CATEGORY, D.DT_DESCRIPTION AS CATEGORY_DESC, TASK_DATE
+        FROM tasks A
+        LEFT JOIN masters B ON A.STATUS = B.DT_CODE AND B.DETAIL_SEQ_ID = 3
+        LEFT JOIN masters C ON A.SEVERITY = C.DT_CODE AND C.DETAIL_SEQ_ID = 1
+        LEFT JOIN masters D ON A.CATEGORY = D.DT_CODE  AND D.DETAIL_SEQ_ID = 2
+        WHERE USER_ID=${getUserDetails.USER_ID} AND STATUS IN (${status})
+        AND TITLE LIKE '%${search}%' AND CATEGORY IN (${category})
+        ORDER BY SEVERITY ${sortBySeverity};`;
+
     let todosList = await db.all(todosQuery);
     // Deleting sensitive information from response
     todosList.forEach(item => {
