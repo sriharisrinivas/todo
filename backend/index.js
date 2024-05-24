@@ -128,29 +128,30 @@ app.get("/getAllUsers/", authenticateToken, async (request, response) => {
 /*  Get Profile Details API */
 
 app.get("/profile/", authenticateToken, async (request, response) => {
-    let query = `SELECT * FROM users WHERE USER_NAME=${payload.userName};`;
+    let query = `SELECT * FROM users WHERE USER_NAME='${request.userName}';`;
     let userDetails = await db.get(query);
 
-    // Deleting sensitive information from response
-    userDetails.forEach(item => {
-        if (item.PASSWORD) {
-            delete item.PASSWORD;
-        }
-        if (item.USER_ID) {
-            delete item.USER_ID;
-        }
-    });
     response.send(userDetails);
 });
 
 /*  Change API */
 
 app.put("/changePassword/", authenticateToken, async (request, response) => {
-    const { password } = request.body;
-    let hashedPassword = await bcrypt.hash(password, 10);
-    let updatePassQuery = `UPDATE users SET PASSWORD='${hashedPassword}' WHERE USER_NAME='${payload.userName}';`;
-    await db.run(updatePassQuery);
-    response.send({ message: "Password Updated Successfully" });
+    const { newPassword, oldPassword } = request.body;
+    let query = `SELECT * FROM users WHERE USER_NAME='${request.userName}';`;
+    let userDetails = await db.get(query);
+
+    let hashedPassword = await bcrypt.hash(newPassword, 10);
+    let isPasswordValid = await bcrypt.compare(oldPassword, userDetails.PASSWORD);
+    if (isPasswordValid) {
+        let updatePassQuery = `UPDATE users SET PASSWORD='${hashedPassword}' WHERE USER_NAME='${request.userName}';`;
+        await db.run(updatePassQuery);
+        response.status(200);
+        response.send({ message: "Password Updated Successfully" });
+    } else {
+        response.status(400);
+        response.send({ message: "Invalid Password" });
+    }
 });
 
 
