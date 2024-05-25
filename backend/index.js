@@ -196,7 +196,7 @@ app.get("/getStatuses/:id/", authenticateToken, async (request, response) => {
 /* New Method fetching status with filters */
 
 app.post("/todos/", authenticateToken, async (request, response) => {
-    const { status, sortBySeverity, search, category } = request.body;
+    const { status, sortBySeverity, search, category, fromDate, toDate, sortByDate } = request.body;
 
     let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
     let getUserDetails = await db.get(getUserDetailsQuery);
@@ -210,7 +210,9 @@ app.post("/todos/", authenticateToken, async (request, response) => {
         LEFT JOIN masters D ON A.CATEGORY = D.DT_CODE  AND D.DETAIL_SEQ_ID = 2
         WHERE USER_ID=${getUserDetails.USER_ID} AND STATUS IN (${status})
         AND TITLE LIKE '%${search}%' AND CATEGORY IN (${category})
-        ORDER BY SEVERITY ${sortBySeverity};`;
+		AND DATE(TASK_DATE) BETWEEN DATE('${fromDate}') AND DATE('${toDate}')
+        ORDER BY DATE(TASK_DATE) ${sortByDate}, SEVERITY ${sortBySeverity};`;
+    console.log("🚀 ~ app.post ~ todosQuery:", todosQuery)
 
     let todosList = await db.all(todosQuery);
     // Deleting sensitive information from response
