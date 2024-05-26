@@ -13,6 +13,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get("/greeting", (request, response) => {
+    response.send("Hi")
+})
+
 const dbAndServerInitalize = async () => {
     try {
         db = await open({
