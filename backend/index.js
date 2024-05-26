@@ -212,7 +212,6 @@ app.post("/todos/", authenticateToken, async (request, response) => {
         AND TITLE LIKE '%${search}%' AND CATEGORY IN (${category})
 		AND DATE(TASK_DATE) BETWEEN DATE('${fromDate}') AND DATE('${toDate}')
         ORDER BY DATE(TASK_DATE) ${sortByDate}, SEVERITY ${sortBySeverity};`;
-    console.log("🚀 ~ app.post ~ todosQuery:", todosQuery)
 
     let todosList = await db.all(todosQuery);
     // Deleting sensitive information from response
@@ -231,7 +230,7 @@ app.post("/createTodo/", authenticateToken, async (request, response) => {
 
     let query = `INSERT INTO tasks (TITLE, DESCRIPTION, STATUS, SEVERITY, CATEGORY, USER_ID, TASK_CREATED_DATE,TASK_DATE)
             VALUES('${title}', '${description}', ${status}, ${severity}, '${category}', ${getUserDetails.USER_ID}, '${taskCreatedDate}', '${taskDate}');`;
-    db.run(query);
+    await db.run(query);
     response.send({ message: "Saved Succesfully." });
 });
 
@@ -242,6 +241,69 @@ app.put("/updateTodo/", authenticateToken, async (request, response) => {
         SET TITLE='${title}', DESCRIPTION='${description}',STATUS=${status}, SEVERITY=${severity},CATEGORY='${category}',TASK_DATE='${taskDate}'
         WHERE TASK_ID=${taskId};`;
 
-    db.run(query);
+    await db.run(query);
     response.send({ message: "Updated Successfully." });
 });
+
+
+/******************* Cash Book  **********************/
+
+
+app.post("/createNewCashbook/", authenticateToken, async (request, response) => {
+    let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
+    let getUserDetails = await db.get(getUserDetailsQuery);
+    const { title } = request.body;
+
+    let query = `INSERT INTO cashbook (TITLE, USER_ID)
+            VALUES('${title}', ${getUserDetails.USER_ID});`;
+    await db.run(query);
+    response.send({ message: "Saved Succesfully." });
+});
+
+app.get("/getCashbookNames/", authenticateToken, async (request, response) => {
+    let getUserDetailsQuery = `SELECT * FROM users WHERE USER_NAME = '${request.userName}';`;
+    let getUserDetails = await db.get(getUserDetailsQuery);
+
+    let query = `SELECT * FROM cashbook WHERE USER_ID=${getUserDetails.USER_ID};`;
+    let cashBookNames = await db.all(query);
+    response.send(cashBookNames);
+});
+
+app.post("/createNewEntry/", authenticateToken, async (request, response) => {
+    const { description, amount, transactionType, date, cbmId } = request.body;
+
+    let query = `INSERT INTO cashbook_details (DESCRIPTION, AMOUNT, TRANSACTION_TYPE, DATE, CBM_ID)
+            VALUES('${description}', ${amount}, ${transactionType}, '${date}', ${cbmId});`;
+    await db.run(query);
+    response.send({ message: "Saved Succesfully." });
+
+});
+
+app.put("/updateEntry/", authenticateToken, async (request, response) => {
+    const { cbsmId, description, amount, transactionType, date } = request.body;
+
+    let query = `UPDATE cashbook_details SET DESCRIPTION = '${description}', AMOUNT = ${amount},
+        TRANSACTION_TYPE = ${transactionType}, DATE = '${date}' WHERE CBSM_ID=${cbsmId};`;
+    await db.run(query);
+    response.send({ message: "Saved Succesfully." });
+
+});
+
+app.get("/getCashbookDetails/:id/", authenticateToken, async (request, response) => {
+    let query = `SELECT * FROM cashbook_details WHERE CBM_ID=${request.params.id} ORDER BY DATE ASC;`;
+    let cashBookNames = await db.all(query);
+    response.send(cashBookNames);
+});
+
+app.delete("/deleteEntry/:cbsmId/", authenticateToken, async (request, response) => {
+    const { cbsmId } = request.params;
+
+    let query = `DELETE FROM cashbook_details WHERE CBSM_ID=${cbsmId};`;
+    await db.run(query);
+    response.send({ message: "Deleted Succesfully." });
+
+});
+
+
+
+
